@@ -1,0 +1,22 @@
+services:
+  bot:
+    container_name: devlabhub-telegram-bot
+    image: ghcr.io/${GHCR_NAMESPACE:?Set GHCR_NAMESPACE}/devlabhub-telegram-bot:${VERSION:?Set VERSION}
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: "3006"
+    ports:
+      - "127.0.0.1:3006:3006"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3006/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
